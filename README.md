@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Minesweeper
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.0.3.
@@ -28,5 +27,3 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
 =======
 # minesweeper
-# abc
->>>>>>> a99ae291072728e4c1b3f62b7c86ef84abe7ebfe
