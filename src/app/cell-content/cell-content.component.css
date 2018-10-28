@@ -1,0 +1,12 @@
+.cell-content {
+    width: 20px;
+    height: 20px;
+}
+
+.normal-class {
+    opacity: 1;
+}
+
+.hint-class {
+    opacity: 1;
+}

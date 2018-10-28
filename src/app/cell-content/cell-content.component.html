@@ -1,0 +1,1 @@
+<button class="button-cell" (mousedown)="mouseDown()" (mouseup)="mouseUp()" (click)="openCell();" (contextmenu)="onRightClick($event)"><span><img [ngClass]="cell.classCss" class="cell-content" src="{{ isMouseDown ? mouseDownUrl : cell.url }}"></span></button>
