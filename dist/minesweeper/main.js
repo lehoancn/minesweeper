@@ -236,14 +236,7 @@ var CellContentComponent = /** @class */ (function () {
         return false;
     };
     CellContentComponent.prototype.openCell = function () {
-        this.cell.isOpen = true;
-        if (this.cell.hasBomb) {
-            this.cell.url = "./assets/bomb.png";
-        }
-        else {
-            this.cell.url = "./assets/" + this.cell.value + ".png";
-            this.change.emit(this.cell);
-        }
+        this.change.emit(this.cell);
     };
     CellContentComponent.prototype.mouseDown = function () {
         this.isMouseDown = true;
@@ -281,7 +274,7 @@ var CellContentComponent = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = ".cell-content {\n    width: 20px;\n    height: 20px;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvbWFpbi1ib2FyZC9tYWluLWJvYXJkLmNvbXBvbmVudC5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7SUFDSSxZQUFZO0lBQ1osYUFBYTtDQUNoQiIsImZpbGUiOiJzcmMvYXBwL21haW4tYm9hcmQvbWFpbi1ib2FyZC5jb21wb25lbnQuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLmNlbGwtY29udGVudCB7XG4gICAgd2lkdGg6IDIwcHg7XG4gICAgaGVpZ2h0OiAyMHB4O1xufSJdfQ== */"
+module.exports = ".cell-content {\n    width: 20px;\n    height: 20px;\n}\n\ntable {\n    border-spacing: 0px;\n    border-collapse: collapse;\n    padding: 0px;\n    margin: 0px;\n    border: 0px;\n}\n\ntd {\n    padding: 0px;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvbWFpbi1ib2FyZC9tYWluLWJvYXJkLmNvbXBvbmVudC5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7SUFDSSxZQUFZO0lBQ1osYUFBYTtDQUNoQjs7QUFFRDtJQUNJLG9CQUFvQjtJQUNwQiwwQkFBMEI7SUFDMUIsYUFBYTtJQUNiLFlBQVk7SUFDWixZQUFZO0NBQ2Y7O0FBQ0Q7SUFDSSxhQUFhO0NBQ2hCIiwiZmlsZSI6InNyYy9hcHAvbWFpbi1ib2FyZC9tYWluLWJvYXJkLmNvbXBvbmVudC5jc3MiLCJzb3VyY2VzQ29udGVudCI6WyIuY2VsbC1jb250ZW50IHtcbiAgICB3aWR0aDogMjBweDtcbiAgICBoZWlnaHQ6IDIwcHg7XG59XG5cbnRhYmxlIHtcbiAgICBib3JkZXItc3BhY2luZzogMHB4O1xuICAgIGJvcmRlci1jb2xsYXBzZTogY29sbGFwc2U7XG4gICAgcGFkZGluZzogMHB4O1xuICAgIG1hcmdpbjogMHB4O1xuICAgIGJvcmRlcjogMHB4O1xufVxudGQge1xuICAgIHBhZGRpbmc6IDBweDtcbn0iXX0= */"
 
 /***/ }),
 
@@ -330,7 +323,7 @@ var MainBoardComponent = /** @class */ (function () {
             var rand = Math.floor((Math.random() * this.MAX_ROWS * this.MAX_COLUMNS));
             this.rands.push(rand);
         }
-        console.log(this.rands);
+        //console.log(this.rands);
         for (var i = 0; i < this.MAX_ROWS; i++) {
             var rows = [];
             for (var j = 0; j < this.MAX_COLUMNS; j++) {
@@ -370,7 +363,21 @@ var MainBoardComponent = /** @class */ (function () {
         }
         return count;
     };
+    MainBoardComponent.prototype.gameOver = function () {
+        for (var _i = 0, _a = this.cells; _i < _a.length; _i++) {
+            var row = _a[_i];
+            for (var _b = 0, row_1 = row; _b < row_1.length; _b++) {
+                var eachCell = row_1[_b];
+                this.openSingleCell(eachCell);
+            }
+        }
+    };
     MainBoardComponent.prototype.openCell = function (cell) {
+        if (cell.hasBomb) {
+            this.gameOver();
+            return;
+        }
+        this.openSingleCell(cell);
         if (cell.value == 0) {
             this.openEmptyCell(cell);
         }
@@ -379,23 +386,15 @@ var MainBoardComponent = /** @class */ (function () {
             if (countFlags == cell.value) {
                 this.openSiblings(cell);
             }
-            else {
-                var unopenSiblings = this.getUnopenSiblings([cell]);
-                console.log("Show hint", unopenSiblings);
-                for (var _i = 0, unopenSiblings_1 = unopenSiblings; _i < unopenSiblings_1.length; _i++) {
-                    var sibling = unopenSiblings_1[_i];
-                    sibling.classCss = "hint-class";
-                }
-                for (var _a = 0, _b = this.cells; _a < _b.length; _a++) {
-                    var row = _b[_a];
-                    for (var _c = 0, row_1 = row; _c < row_1.length; _c++) {
-                        var eachCell = row_1[_c];
-                        if (!unopenSiblings.includes(eachCell)) {
-                            eachCell.classCss = "normal-class";
-                        }
-                    }
-                }
-            }
+        }
+    };
+    MainBoardComponent.prototype.openSingleCell = function (cell) {
+        cell.isOpen = true;
+        if (cell.hasBomb) {
+            cell.url = "./assets/bomb.png";
+        }
+        else {
+            cell.url = "./assets/" + cell.value + ".png";
         }
     };
     MainBoardComponent.prototype.openEmptyCell = function (emptyCell) {
@@ -404,14 +403,12 @@ var MainBoardComponent = /** @class */ (function () {
         emptySiblings = this.getEmptySibling(emptySiblings);
         for (var _i = 0, emptySiblings_1 = emptySiblings; _i < emptySiblings_1.length; _i++) {
             var sibling = emptySiblings_1[_i];
-            sibling.url = "./assets/0.png";
-            sibling.isOpen = true;
+            this.openSingleCell(sibling);
         }
         var unopenSiblings = this.getUnopenSiblings(emptySiblings);
-        for (var _a = 0, unopenSiblings_2 = unopenSiblings; _a < unopenSiblings_2.length; _a++) {
-            var sibling = unopenSiblings_2[_a];
-            sibling.url = "./assets/" + sibling.value + ".png";
-            sibling.isOpen = true;
+        for (var _a = 0, unopenSiblings_1 = unopenSiblings; _a < unopenSiblings_1.length; _a++) {
+            var sibling = unopenSiblings_1[_a];
+            this.openSingleCell(sibling);
         }
     };
     MainBoardComponent.prototype.openSiblings = function (cell) {
@@ -425,8 +422,11 @@ var MainBoardComponent = /** @class */ (function () {
                 }
                 var tmpCell = this.cells[i][j];
                 if (!tmpCell.hasFlag) {
-                    tmpCell.url = "./assets/" + tmpCell.value + ".png";
-                    tmpCell.isOpen = true;
+                    if (tmpCell.hasBomb) {
+                        this.gameOver();
+                        return;
+                    }
+                    this.openSingleCell(tmpCell);
                     if (tmpCell.value == 0) {
                         this.openEmptyCell(tmpCell);
                     }

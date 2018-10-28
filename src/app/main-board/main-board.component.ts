@@ -22,7 +22,7 @@ export class MainBoardComponent implements OnInit {
       var rand = Math.floor((Math.random() * this.MAX_ROWS * this.MAX_COLUMNS));
       this.rands.push(rand);
     }
-    console.log(this.rands);
+    //console.log(this.rands);
 
     for(var i = 0; i < this.MAX_ROWS; i++){
       var rows: Cell[] = [];
@@ -45,7 +45,6 @@ export class MainBoardComponent implements OnInit {
         cell.value = this.countBombs(cell);
       }
     }
-    
   }
   countBombs(cell: Cell){
     var count = 0;
@@ -65,29 +64,37 @@ export class MainBoardComponent implements OnInit {
 
     return count;
   }
+
+  gameOver(){
+    for(let row of this.cells){
+      for(let eachCell of row){
+        this.openSingleCell(eachCell);
+      }
+    }
+  }
   
   openCell(cell){
+    if(cell.hasBomb){
+      this.gameOver();
+      return;
+    }
+    this.openSingleCell(cell);
     if(cell.value == 0){
       this.openEmptyCell(cell);
     }else{
       var countFlags = this.countFlags(cell);
       if(countFlags == cell.value){
         this.openSiblings(cell);
-      }else{
-        var unopenSiblings = this.getUnopenSiblings([cell]);
-        console.log("Show hint", unopenSiblings);
-        
-        for(let sibling of unopenSiblings){
-          sibling.classCss = "hint-class";
-        }
-        for(let row of this.cells){
-          for(let eachCell of row){
-            if(!unopenSiblings.includes(eachCell)){
-              eachCell.classCss = "normal-class";
-            }
-          }
-        }
       }
+    }
+  }
+
+  openSingleCell(cell: Cell){
+    cell.isOpen = true;
+    if(cell.hasBomb){
+      cell.url = "./assets/bomb.png";
+    }else{
+      cell.url = "./assets/" + cell.value + ".png";
     }
   }
 
@@ -96,15 +103,12 @@ export class MainBoardComponent implements OnInit {
     emptySiblings.push(emptyCell);
     emptySiblings = this.getEmptySibling(emptySiblings);
     for(let sibling of emptySiblings){
-      sibling.url = "./assets/0.png";
-      sibling.isOpen = true;
+      this.openSingleCell(sibling);
     }
 
     var unopenSiblings = this.getUnopenSiblings(emptySiblings);
-
     for(let sibling of unopenSiblings){
-      sibling.url = "./assets/" + sibling.value + ".png";
-      sibling.isOpen = true;
+      this.openSingleCell(sibling);
     }
   }
 
@@ -119,8 +123,11 @@ export class MainBoardComponent implements OnInit {
         }
         var tmpCell: Cell = this.cells[i][j];
         if(!tmpCell.hasFlag){
-          tmpCell.url = "./assets/" + tmpCell.value + ".png";
-          tmpCell.isOpen = true;
+          if(tmpCell.hasBomb){
+            this.gameOver();
+            return;
+          }
+          this.openSingleCell(tmpCell);
           if(tmpCell.value == 0){
             this.openEmptyCell(tmpCell);
           }

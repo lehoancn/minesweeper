@@ -31,13 +31,7 @@ export class CellContentComponent implements OnInit {
     return false;
   }
   openCell(){
-    this.cell.isOpen = true;
-    if(this.cell.hasBomb){
-      this.cell.url = "./assets/bomb.png";
-    }else{
-      this.cell.url = "./assets/" + this.cell.value + ".png";
-      this.change.emit(this.cell);
-    }
+    this.change.emit(this.cell);
   }
   mouseDown(){
     this.isMouseDown = true;
