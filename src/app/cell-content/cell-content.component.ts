@@ -12,6 +12,7 @@ export class CellContentComponent implements OnInit {
 
   @Input() cell: Cell;
   @Output() change = new EventEmitter();
+  @Output() checkSuccess = new EventEmitter();
 
   constructor() { }
 
@@ -28,6 +29,7 @@ export class CellContentComponent implements OnInit {
       }
     }
     this.cell.hasFlag = !this.cell.hasFlag;
+    this.checkSuccess.emit(this.cell);
     return false;
   }
   openCell(){

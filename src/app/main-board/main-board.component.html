@@ -1,7 +1,7 @@
 <table>
   <tr *ngFor="let row of cells">
     <td *ngFor="let cell of row">
-      <app-cell-content [cell]="cell" (change)="openCell($event)"></app-cell-content>
+      <app-cell-content [cell]="cell" (change)="openCell($event)" (checkSuccess)="checkSuccess($event)"></app-cell-content>
     </td>
   </tr>
 </table>

@@ -219,6 +219,7 @@ var CellContentComponent = /** @class */ (function () {
         this.isMouseDown = false;
         this.mouseDownUrl = "./assets/0.png";
         this.change = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
+        this.checkSuccess = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
     }
     CellContentComponent.prototype.ngOnInit = function () {
         this.cell.classCss = "normal-class";
@@ -233,6 +234,7 @@ var CellContentComponent = /** @class */ (function () {
             }
         }
         this.cell.hasFlag = !this.cell.hasFlag;
+        this.checkSuccess.emit(this.cell);
         return false;
     };
     CellContentComponent.prototype.openCell = function () {
@@ -252,6 +254,10 @@ var CellContentComponent = /** @class */ (function () {
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Output"])(),
         __metadata("design:type", Object)
     ], CellContentComponent.prototype, "change", void 0);
+    __decorate([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Output"])(),
+        __metadata("design:type", Object)
+    ], CellContentComponent.prototype, "checkSuccess", void 0);
     CellContentComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
             selector: 'app-cell-content',
@@ -285,7 +291,7 @@ module.exports = ".cell-content {\n    width: 20px;\n    height: 20px;\n}\n\ntab
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<table>\n  <tr *ngFor=\"let row of cells\">\n    <td *ngFor=\"let cell of row\">\n      <app-cell-content [cell]=\"cell\" (change)=\"openCell($event)\"></app-cell-content>\n    </td>\n  </tr>\n</table>"
+module.exports = "<table>\n  <tr *ngFor=\"let row of cells\">\n    <td *ngFor=\"let cell of row\">\n      <app-cell-content [cell]=\"cell\" (change)=\"openCell($event)\" (checkSuccess)=\"checkSuccess($event)\"></app-cell-content>\n    </td>\n  </tr>\n</table>"
 
 /***/ }),
 
@@ -314,7 +320,7 @@ var MainBoardComponent = /** @class */ (function () {
     function MainBoardComponent() {
         this.MAX_ROWS = 19;
         this.MAX_COLUMNS = 10;
-        this.NUMBER_OF_BOMBS = 50;
+        this.NUMBER_OF_BOMBS = 40;
         this.rands = [];
         this.cells = [];
     }
@@ -323,7 +329,6 @@ var MainBoardComponent = /** @class */ (function () {
             var rand = Math.floor((Math.random() * this.MAX_ROWS * this.MAX_COLUMNS));
             this.rands.push(rand);
         }
-        //console.log(this.rands);
         for (var i = 0; i < this.MAX_ROWS; i++) {
             var rows = [];
             for (var j = 0; j < this.MAX_COLUMNS; j++) {
@@ -372,6 +377,35 @@ var MainBoardComponent = /** @class */ (function () {
             }
         }
     };
+    MainBoardComponent.prototype.checkSuccess = function (cell) {
+        var countOpenCells = 0;
+        var countBombHasFlag = 0;
+        var countFlags = 0;
+        var countBombs = 0;
+        for (var _i = 0, _a = this.cells; _i < _a.length; _i++) {
+            var row = _a[_i];
+            for (var _b = 0, row_2 = row; _b < row_2.length; _b++) {
+                var eachCell = row_2[_b];
+                if (eachCell.isOpen) {
+                    countOpenCells++;
+                }
+                if (eachCell.hasBomb) {
+                    countBombs++;
+                }
+                if (eachCell.hasFlag) {
+                    if (eachCell.hasFlag) {
+                        countFlags++;
+                        if (eachCell.hasBomb) {
+                            countBombHasFlag++;
+                        }
+                    }
+                }
+            }
+        }
+        if (countOpenCells + countFlags == this.MAX_ROWS * this.MAX_COLUMNS && countBombs == countBombHasFlag) {
+            console.log("Success!");
+        }
+    };
     MainBoardComponent.prototype.openCell = function (cell) {
         if (cell.hasBomb) {
             this.gameOver();
@@ -387,6 +421,7 @@ var MainBoardComponent = /** @class */ (function () {
                 this.openSiblings(cell);
             }
         }
+        this.checkSuccess(cell);
     };
     MainBoardComponent.prototype.openSingleCell = function (cell) {
         cell.isOpen = true;

@@ -9,7 +9,7 @@ import { Cell } from '../api/cell';
 export class MainBoardComponent implements OnInit {
   MAX_ROWS = 19;
   MAX_COLUMNS = 10;
-  NUMBER_OF_BOMBS = 50;
+  NUMBER_OF_BOMBS = 40;
 
   rands: number[] = [];
 
@@ -22,7 +22,6 @@ export class MainBoardComponent implements OnInit {
       var rand = Math.floor((Math.random() * this.MAX_ROWS * this.MAX_COLUMNS));
       this.rands.push(rand);
     }
-    //console.log(this.rands);
 
     for(var i = 0; i < this.MAX_ROWS; i++){
       var rows: Cell[] = [];
@@ -72,6 +71,33 @@ export class MainBoardComponent implements OnInit {
       }
     }
   }
+  checkSuccess(cell){
+    var countOpenCells = 0;
+    var countBombHasFlag = 0;
+    var countFlags = 0;
+    var countBombs = 0
+    for(let row of this.cells){
+      for(let eachCell of row){
+        if(eachCell.isOpen){
+          countOpenCells++;
+        }
+        if(eachCell.hasBomb){
+          countBombs++;
+        }
+        if(eachCell.hasFlag){
+          if(eachCell.hasFlag){
+            countFlags++;
+            if(eachCell.hasBomb){
+              countBombHasFlag++;
+            }
+          }
+        }
+      }
+    }
+    if(countOpenCells + countFlags == this.MAX_ROWS * this.MAX_COLUMNS && countBombs == countBombHasFlag){
+      console.log("Success!");
+    }
+  }
   
   openCell(cell){
     if(cell.hasBomb){
@@ -87,6 +113,7 @@ export class MainBoardComponent implements OnInit {
         this.openSiblings(cell);
       }
     }
+    this.checkSuccess(cell);
   }
 
   openSingleCell(cell: Cell){
